@@ -4,7 +4,7 @@
 # chicken-stb-image
 
 This is a [CHICKEN] egg that wraps [stb_image.h] version 2.19 from
-Sean Barrett and friends.
+Sean Barrett and friends. It works on [CHICKEN] 4 and 5.
 
 # API
 

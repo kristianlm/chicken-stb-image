@@ -1,8 +1,9 @@
-(import stb-image (chicken blob) srfi-4
-	(chicken file)
-	(chicken pathname)
-	test)
-
+(cond-expand
+ (chicken-5 (import stb-image (chicken blob) srfi-4
+		    (chicken file)
+		    (chicken pathname)
+		    test))
+ (else (use stb-image test srfi-4 posix)))
 
 (test
  "read-image 2x2 grayscale png"

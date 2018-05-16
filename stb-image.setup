@@ -1,0 +1,4 @@
+;; -*- scheme -*-
+(compile -J -s "stb-image-module4.scm" -o "stb-image.so")
+(compile -s "stb-image.import.scm")
+(install-extension 'stb-image '("stb-image.so" "stb-image.import.so"))
