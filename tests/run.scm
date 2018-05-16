@@ -24,10 +24,30 @@
  ;;   pixels       w h c
  `(#${00 45 ab ff} 2 2 1)
  (receive
-     (load-image (blob->string #${00000b00000000000000000002000200080001
-				  abff0100450000000000000000545255455649
-				  53494f4e2d5846494c452e00}))))
+     (load-image #${00000b00000000000000000002000200080001
+		    abff0100450000000000000000545255455649
+		    53494f4e2d5846494c452e00})))
 
+
+(test
+ "load-image-info 2x2 grayscale tga"
+ ;;   pixels       w h c
+ `(2 2 1)
+ (receive
+     (load-image-info #${00000b00000000000000000002000200080001
+			 abff0100450000000000000000545255455649
+			 53494f4e2d5846494c452e00})))
+
+(test
+ "read-image-info 2x2 grayscale tga"
+ ;;   pixels       w h c
+ `(2 2 1)
+ (receive
+     (with-input-from-string
+	 (blob->string #${00000b00000000000000000002000200080001
+			  abff0100450000000000000000545255455649
+			  53494f4e2d5846494c452e00})
+       read-image-info)))
 
 
 (define (write-pgm blob w h)
