@@ -11,9 +11,13 @@ Sean Barrett and friends. It works on [CHICKEN] 4 and 5.
     [procedure] (read-image #!key channels)
     [procedure] (load-image blob #!key channels)
 
-Decodes images. `read-image` reads the image from from
-`(current-input-port)` while `load-image` gets its data through a blob
-or a string. The image type is detected by content. Returns 4 values:
+Decodes an image into raw pixel data. `read-image` reads the image
+from from `(current-input-port)` while `load-image` gets this from the
+provided blob or string. The image type is detected by content, and
+may be: JPEG, PNG, TGA, BMP, PSD, GIF, HDR, PIC, PNM as explained in
+the heading comments of `stb_image.h`.
+
+Both procedures return 4 values:
 
 1. raw pixel data (as blob)
 2. width
@@ -24,18 +28,17 @@ You can force the number of channels with the `channels` keyword. If
 `channels` is `#f` or not given, the number of channels in the
 original image will be used.
 
-The size of the pixel data is always `(* width height channels)`
+The size of the pixel data blob is always `(* width height channels)`
 bytes. The first pixel is the top-left-most in the image. Each pixel
 is `channel` number of bytes long. The number of channels define the
-pixel format interleaved in order as follows:
+pixel color, interleaved as follows:
 
 1. grey
 2. grey, alpha
 3. red, green, blue
 4. red, green, blue, alpha
 
-The supported image types are: `png`, `bmp`, `tga` and
-`jpg`. [stb_image.h]'s `hdr` support only works with `load-image`.
+Note that [stb_image.h]'s `hdr` support only works with `load-image`.
 
     [procedure] (read-image-info)
 	[procedure] (load-image-info blob)
@@ -48,7 +51,6 @@ should be faster. Returns three values:
 3. number of channels
 
 ## Examples
-
 
     (receive
          (with-input-from-string
