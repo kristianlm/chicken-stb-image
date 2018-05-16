@@ -110,4 +110,6 @@
 		    (with-input-from-string "bad example" read-image)
 		    #f))
 
+(print "there are PPM files under tests/out/ for manual inspection")
+
 (test-exit)
