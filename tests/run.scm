@@ -66,7 +66,7 @@
 (define (convert file) (system (conc "convert test.png " file)))
 
 (define (testing file)
-  (print "testing " file)
+  (print "loading " file)
   (convert (target file))
   (receive (d w h c)
       (with-input-from-file (target file) read-image)
