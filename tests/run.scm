@@ -95,6 +95,7 @@
 #|rgbtest pointless: lossy |# (ppm (source "rgb.jpg"))
 (rgbtest (source "rgb.bmp"))  (ppm (source "rgb.bmp"))
 (rgbtest (source "rgb.tga"))  (ppm (source "rgb.tga"))
+(rgbtest (source "rgb.psd"))  (ppm (source "rgb.psd"))
 
 (receive (d w h c)
     (load-image (with-input-from-file (source "rgb.hdr") read-string))
