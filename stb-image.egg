@@ -1,0 +1,5 @@
+;; -*- scheme -*-
+((author "Kristian Lein-Mathisen")
+ (license "public domain")
+ (components (extension stb-image
+			(source "stb-image-module5.scm"))))

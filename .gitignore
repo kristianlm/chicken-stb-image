@@ -1,0 +1,9 @@
+/stb-image.build.sh
+/stb-image.import.scm
+/stb-image.import.so
+/stb-image.install.sh
+/stb-image.link
+/stb-image.so
+/stb-image.static.o
+/tests/out/
+
