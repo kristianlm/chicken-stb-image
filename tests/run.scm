@@ -103,8 +103,11 @@
 	(subu8vector (blob->u8vector/shared d) 0 (* 3 5)))
   (with-output-to-file (target "test.hdr" ".ppm") (lambda () (write-ppm d w h c))))
 
-(display "\nExpecting \"unknown image type\" error here: ")
-(handle-exceptions e (print-error-message e)
-		   (with-input-from-string "bad example" read-image))
+(test
+ "error message propagation"
+ "\nError: (read-image) unknown image type\n"
+ (handle-exceptions e (with-output-to-string (lambda () (print-error-message e)))
+		    (with-input-from-string "bad example" read-image)
+		    #f))
 
 (test-exit)
