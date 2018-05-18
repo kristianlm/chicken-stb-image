@@ -9,6 +9,8 @@
       (error loc ((foreign-lambda c-string "stbi_failure_reason")))
       i))
 
+(define stbi-image-free (foreign-lambda void "stbi_image_free" (c-pointer void)))
+
 (define (load-image blob #!key channels)
   (let-location
    ((x int)
@@ -35,6 +37,7 @@
    
    (let ((pixels (make-blob (* x y channels))))
      (move-memory! ptr pixels (blob-size pixels))
+     (stbi-image-free ptr)
      (values pixels x y channels))))
 
 (define (load-image-info blob)
@@ -100,6 +103,7 @@
     (let* ((size (* x y channels))
 	   (pixels (make-blob size)))
       (move-memory! ptr pixels size)
+      (stbi-image-free ptr)
       (values pixels x y channels))))
 
 (define (read-image-info)
