@@ -20,7 +20,7 @@
    (define ptr
      (check
       ((foreign-lambda* (c-pointer char)
-			((scheme-pointer buffer) ;;(stbi_uc const *buffer)
+			((u8vector buffer) ;;(stbi_uc const *buffer)
 			 (int len)
 			 ((c-pointer int) x)
 			 ((c-pointer int) y)
@@ -31,12 +31,12 @@
 			"   buffer, len, x, y, &file_channels, *channels);"
 			"if(*channels == 0) *channels = file_channels;"
 			"return(ret);")
-       blob (number-of-bytes blob)
+       blob (u8vector-length blob)
        (location x) (location y) (location channels))
       'stbi-load-from-memory))
    
-   (let ((pixels (make-blob (* x y channels))))
-     (move-memory! ptr pixels (blob-size pixels))
+   (let ((pixels (make-u8vector (* x y channels))))
+     (move-memory! ptr pixels (u8vector-length pixels))
      (stbi-image-free ptr)
      (values pixels x y channels))))
 
@@ -47,13 +47,13 @@
     (channels int))
    (check
      ((foreign-lambda* int
-		       ((scheme-pointer buffer) ;;(stbi_uc const *buffer)
+		       ((u8vector buffer) ;;(stbi_uc const *buffer)
 			(int len)
 			((c-pointer int) x)
 			((c-pointer int) y)
 			((c-pointer int) channels))
 		       "return(stbi_info_from_memory(buffer, len, x, y, channels));")
-      blob (number-of-bytes blob)
+      blob (u8vector-length blob)
       (location x) (location y) (location channels))
      'stbi-info-from-memory)
    (values x y channels)))
@@ -101,7 +101,7 @@
 	(location x) (location y) (location channels))
        'read-image))
     (let* ((size (* x y channels))
-	   (pixels (make-blob size)))
+	   (pixels (make-u8vector size)))
       (move-memory! ptr pixels size)
       (stbi-image-free ptr)
       (values pixels x y channels))))

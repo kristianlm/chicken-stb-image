@@ -11,7 +11,7 @@
  (only (chicken memory) move-memory!)
  (only (chicken blob) make-blob blob-size)
  (only (chicken string) conc)
- (srfi-4)
+ (only (srfi-4) u8vector-length make-u8vector read-u8vector u8vector)
  (chicken foreign))
 
 (include "stb-image.scm"))

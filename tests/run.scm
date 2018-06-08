@@ -8,7 +8,7 @@
 (test
  "read-image 2x2 grayscale png"
  ;;   pixels       w h c
- `(#${00 45 ab ff} 2 2 1)
+ `(#u8(00 69 171 255) 2 2 1)
  (receive
      (with-input-from-string
 	 (conc "\211PNG\r\n\x1a\n\x00\x00\x00\r"
@@ -22,11 +22,11 @@
 (test
  "load-image 2x2 grayscale tga"
  ;;   pixels       w h c
- `(#${00 45 ab ff} 2 2 1)
+ `(#u8(00 69 171 255) 2 2 1)
  (receive
-     (load-image #${00000b00000000000000000002000200080001
-		    abff0100450000000000000000545255455649
-		    53494f4e2d5846494c452e00})))
+     (load-image (blob->u8vector #${00000b00000000000000000002000200080001
+		                    abff0100450000000000000000545255455649
+		                    53494f4e2d5846494c452e00}))))
 
 
 (test
@@ -34,9 +34,9 @@
  ;;   pixels       w h c
  `(2 2 1)
  (receive
-     (load-image-info #${00000b00000000000000000002000200080001
-			 abff0100450000000000000000545255455649
-			 53494f4e2d5846494c452e00})))
+     (load-image-info (blob->u8vector #${00000b00000000000000000002000200080001
+			                 abff0100450000000000000000545255455649
+			                 53494f4e2d5846494c452e00}))))
 
 (test
  "read-image-info 2x2 grayscale tga"
@@ -60,31 +60,29 @@
   (test "png 4k rgb24 width" 3 c)
   ;; just test the first few pixels.
   (test "png 4k rgb24 pixels" #u8(255 255 255 255 0 0 0 255 0 0 0 255)
-	(subu8vector (blob->u8vector/shared d) 0 (* 3 4))))
+	(subu8vector d 0 (* 3 4))))
 
 (define (write-ppm blob w h c)
   (assert (or (= c 3) (= c 4)))
-  (let ((v (blob->u8vector/shared blob)))
-    (print "P3")
-    (print "# ppm writer by chicken-stb-image test")
-    (print w " " h)
-    (print 255)
-    (do ((y 0 (+ y 1)))
-	((>= y h))
-      (do ((x 0 (+ x 1)))
-	  ((>= x w))
-	(display (u8vector-ref v (+ 0 (* c x) (* c w y)))) (display " ")
-	(display (u8vector-ref v (+ 1 (* c x) (* c w y)))) (display " ")
-	(display (u8vector-ref v (+ 2 (* c x) (* c w y)))) (display " "))
-      (newline))))
+  (print "P3")
+  (print "# ppm writer by chicken-stb-image test")
+  (print w " " h)
+  (print 255)
+  (do ((y 0 (+ y 1)))
+      ((>= y h))
+    (do ((x 0 (+ x 1)))
+	((>= x w))
+      (display (u8vector-ref blob (+ 0 (* c x) (* c w y)))) (display " ")
+      (display (u8vector-ref blob (+ 1 (* c x) (* c w y)))) (display " ")
+      (display (u8vector-ref blob (+ 2 (* c x) (* c w y)))) (display " "))
+    (newline)))
 
 
 ;; expecgted pixels. see source.ppm
 (define-values (pixels w h c)
   (values
-   (u8vector->blob/shared
-    (u8vector 000 000 000   255 255 255   255 000 000  000 255 000   000 000 255
-              000 000 000   001 002 003   004 005 006  007 008 009   010 011 012))
+   (u8vector 000 000 000   255 255 255   255 000 000  000 255 000   000 000 255
+             000 000 000   001 002 003   004 005 006  007 008 009   010 011 012)
    5 2 3))
 
 (define (testing file pixels rgb-read? rgb-load? channels)
@@ -96,7 +94,7 @@
 
   (when rgb-load?
     (receive (d w h c)
-	(load-image (with-input-from-file file read-string) channels: channels)
+	(load-image (with-input-from-file file read-u8vector) channels: channels)
       (test (conc "rgb pixel data load " file) pixels d))))
 
 ;;                                read load  channels
@@ -106,7 +104,8 @@
 (testing (source "rgb.pnm") pixels  #f   #t  c)
 (testing (source "rgb.psd") pixels  #t   #t  c)
 (testing (source "rgb.hdr")
-         #${000000ffffffff000000ff000000ff00000006090b0c0d0e101111121314}
+         (u8vector 000 000 000 255 255 255 255 000 000 000 255 000 000 000 255
+                   000 000 000 006 009 011 012 013 014 016 017 017 018 019 020)
          #f   #t  c) ;; TODO: fix this big time
 
 
