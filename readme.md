@@ -38,7 +38,8 @@ pixel color, interleaved as follows:
 3. red, green, blue
 4. red, green, blue, alpha
 
-Note that [stb_image.h]'s `hdr` support only works with `load-image`.
+Note that [stb_image.h]'s `hdr` and `pnm` support only works with
+`load-image`.
 
     [procedure] (read-image-info)
 	[procedure] (load-image-info blob)
