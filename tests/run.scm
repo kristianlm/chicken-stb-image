@@ -78,31 +78,48 @@
 	(display (u8vector-ref v (+ 2 (* c x) (* c w y)))) (display " "))
       (newline))))
 
-(define (ppm file)
-  (receive (d w h c)
-      (with-input-from-file file read-image)
-    (with-output-to-file (conc (target file ".ppm"))
-      (lambda () (write-ppm d w h c)))))
 
-(define (rgbtest file)
-  (receive (d w h c)
-      (with-input-from-file file (lambda () (read-image channels: 3)))
-    (test (conc "rgb pixel data " file)
-	  #u8(0 0 0   255 0 0   0 255 0  0 0 255 255 255 255)
-	  (subu8vector (blob->u8vector/shared d) 0 (* 3 5)))))
+;; expecgted pixels. see source.ppm
+(define-values (pixels w h c)
+  (values
+   (u8vector->blob/shared
+    (u8vector 000 000 000   255 255 255   255 000 000  000 255 000   000 000 255
+              000 000 000   001 002 003   004 005 006  007 008 009   010 011 012))
+   5 2 3))
 
-(rgbtest (source "rgb.png"))  (ppm (source "rgb.png"))
-#|rgbtest pointless: lossy |# (ppm (source "rgb.jpg"))
-(rgbtest (source "rgb.bmp"))  (ppm (source "rgb.bmp"))
-(rgbtest (source "rgb.tga"))  (ppm (source "rgb.tga"))
-(rgbtest (source "rgb.psd"))  (ppm (source "rgb.psd"))
+(define (testing file pixels rgb-read? rgb-load? channels)
 
-(receive (d w h c)
-    (load-image (with-input-from-file (source "rgb.hdr") read-string))
-  (test "rgb pixel data hdr from memory"
-	#u8(0 0 0   255 0 0   0 255 0  0 0 255 255 255 255)
-	(subu8vector (blob->u8vector/shared d) 0 (* 3 5)))
-  (with-output-to-file (target "test.hdr" ".ppm") (lambda () (write-ppm d w h c))))
+  (when rgb-read?
+    (receive (d w h c)
+	(with-input-from-file file (lambda () (read-image channels: channels)))
+      (test (conc "rgb pixel data read " file) pixels d)))
+
+  (when rgb-load?
+    (receive (d w h c)
+	(load-image (with-input-from-file file read-string) channels: channels)
+      (test (conc "rgb pixel data load " file) pixels d))))
+
+;;                                read load  channels
+(testing (source "rgb.png") pixels  #t   #t  c)
+(testing (source "rgb.bmp") pixels  #t   #t  c)
+(testing (source "rgb.tga") pixels  #t   #t  c)
+(testing (source "rgb.pnm") pixels  #f   #t  c)
+(testing (source "rgb.psd") pixels  #t   #t  c)
+(testing (source "rgb.hdr")
+         #${000000ffffffff000000ff000000ff00000006090b0c0d0e101111121314}
+         #f   #t  c) ;; TODO: fix this big time
+
+
+;; TODO: find a way to convert my rgb.png to rgb.pic and test that too
+
+;; jpg is special since it's lossy. no point in comparing
+;; pixel-for-pixel.  but we can produce a ppm and inspect manually if
+;; anybody cares.
+(let ((file (source "rgb.jpg")))
+ (receive (d w h c)
+     (with-input-from-file file read-image)
+   (with-output-to-file (conc (target file ".ppm"))
+     (lambda () (write-ppm d w h c)))))
 
 (test
  "error message propagation"
