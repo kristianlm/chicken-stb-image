@@ -1,6 +1,7 @@
 ;; -*- scheme -*-
 ((author "Kristian Lein-Mathisen")
  (license "public domain")
+ (category graphics)
  (test-dependencies test)
  (components (extension stb-image
 			(source "stb-image-module5.scm"))))

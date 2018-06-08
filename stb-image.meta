@@ -1,4 +1,5 @@
 ;; -*- scheme -*-
 ((author "Kristian Lein-Mathisen")
  (license "public domain")
+ (category graphics)
  (test-depends test))
