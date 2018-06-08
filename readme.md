@@ -52,6 +52,16 @@ should be faster. Returns three values:
 
 ## Examples
 
+For quick testing, you can read PNGs from ImageMagick's convert:
+
+    $ convert caption:"x" png:- | csi -R stb-image -p '(read-image)'
+    #${ffffffffffffffffffffffffffff8d99f141f8fffffc465ac4ffffffffa536fffffffff74367b2ffffff78aff33af3ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff}
+    7
+    14
+    1
+
+Or load embedded string PNGs:
+
     (receive
          (with-input-from-string
            (conc "\211PNG\r\n\x1a\n\x00\x00\x00\r"
