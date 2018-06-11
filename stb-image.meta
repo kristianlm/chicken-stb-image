@@ -1,5 +1,6 @@
 ;; -*- scheme -*-
 ((author "Kristian Lein-Mathisen")
  (license "public domain")
+ (synopsis "read png/jpg/tga/bmp/psd/gif/hdr/pic/pnm into pixels")
  (category graphics)
  (test-depends test))

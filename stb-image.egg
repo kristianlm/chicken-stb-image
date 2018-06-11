@@ -3,5 +3,6 @@
  (license "public domain")
  (category graphics)
  (test-dependencies test)
+ (synopsis "read png/jpg/tga/bmp/psd/gif/hdr/pic/pnm images into pixels")
  (components (extension stb-image
 			(source "stb-image-module5.scm"))))
