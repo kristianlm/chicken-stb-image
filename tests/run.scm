@@ -54,12 +54,12 @@
   (create-directory "out")
   (make-pathname "out" (conc (pathname-strip-directory file) appending)))
 
-(receive (d w h c) (with-input-from-file (source "4k.png") read-image)
-  (test "png 4k rgb24 width" 3840 w)
-  (test "png 4k rgb24 width" 2160 h)
-  (test "png 4k rgb24 width" 3 c)
+(receive (d w h c) (with-input-from-file (source "big.png") read-image)
+  (test "png big rgb24 width" 1024 w)
+  (test "png big rgb24 width" 1024 h)
+  (test "png big rgb24 width" 3 c)
   ;; just test the first few pixels.
-  (test "png 4k rgb24 pixels" #u8(255 255 255 255 0 0 0 255 0 0 0 255)
+  (test "png big rgb24 pixels" #u8(255 255 255 255 0 0 0 255 0 0 0 255)
 	(subu8vector d 0 (* 3 4))))
 
 (define (write-ppm blob w h c)
