@@ -51,6 +51,9 @@ should be faster. Returns three values:
 2. height
 3. number of channels
 
+Note that on 32-bit systems, blobs cannot be larger than 16M. This
+limits image sizes as pixel data is stored as blobs.
+
 ## Examples
 
 For quick testing, you can read PNGs from ImageMagick's `convert`:
