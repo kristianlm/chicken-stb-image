@@ -69,3 +69,12 @@ For quick testing, you can read PNGs from ImageMagick's `convert`:
 
 Which reveal the black line along the diagonal and informs that the
 image is 4x4 with 3-channels.
+
+## Known limitations
+
+#### backwards seek not implemented
+
+Some special-case images try to seek backwards in the internal
+API. This hasn't been implemented due to increased complexity: you may
+see a "backwards seek not implemented" error. If this is a
+show-stopper, contact the author.
