@@ -78,7 +78,7 @@
   void
   (if (>= n 0)
       (read-string n)
-      (error "backwards seek not implemented")))
+      (error "backwards seek not implemented" n)))
 
 ;; C callbacks for feeding image data coming from
 ;; (current-input-port). user data is used to store the one-byte
