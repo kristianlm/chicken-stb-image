@@ -66,8 +66,11 @@
 		  (int size))
   int
   (let ((r (read-string size)))
-    (move-memory! r data) ;; how to avoid copying?
-    (string-length r)))
+    (if (eof-object? r)
+        0
+        (begin
+          (move-memory! r data) ;; how to avoid copying?
+          (string-length r)))))
 
 (define-external (chicken_port_skip
 		  ((c-pointer void) user)
