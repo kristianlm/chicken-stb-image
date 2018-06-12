@@ -101,12 +101,12 @@
 (testing (source "rgb.png") pixels  #t   #t  c)
 (testing (source "rgb.bmp") pixels  #t   #t  c)
 (testing (source "rgb.tga") pixels  #t   #t  c)
-(testing (source "rgb.pnm") pixels  #f   #t  c)
+(testing (source "rgb.pnm") pixels  #t   #t  c)
 (testing (source "rgb.psd") pixels  #t   #t  c)
 (testing (source "rgb.hdr")
          (u8vector 000 000 000 255 255 255 255 000 000 000 255 000 000 000 255
                    000 000 000 006 009 011 012 013 014 016 017 017 018 019 020)
-         #f   #t  c) ;; TODO: fix this big time
+         #t   #t  c) ;; TODO: fix this big time
 
 
 ;; TODO: find a way to convert my rgb.png to rgb.pic and test that too
@@ -126,6 +126,12 @@
  (handle-exceptions e (with-output-to-string (lambda () (print-error-message e)))
 		    (with-input-from-string "bad example" read-image)
 		    #f))
+
+(test
+ "eof-causing special-header jpg"
+ (vector 1920 2560 3)
+ (receive (pixels w h c) (with-input-from-file "img/nexus4.jpg" read-image)
+   (vector w h c)))
 
 (print "there are PPM files under tests/out/ for manual inspection")
 

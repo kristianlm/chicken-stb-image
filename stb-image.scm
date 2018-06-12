@@ -60,7 +60,7 @@
 
 ;; ==================== externals ====================
 
-(define-external (port_read
+(define-external (chicken_port_read
 		  ((c-pointer void) user)
 		  ((c-pointer char) data)
 		  (int size))
@@ -69,7 +69,7 @@
     (move-memory! r data) ;; how to avoid copying?
     (string-length r)))
 
-(define-external (port_skip
+(define-external (chicken_port_skip
 		  ((c-pointer void) user)
 		  (int n))
   void
@@ -77,10 +77,44 @@
       (read-string n)
       (error "backwards seek not implemented")))
 
-(define-external (port_eof
-		  ((c-pointer void) user))
-  int
-  (error "eof callback not implemented"))
+;; C callbacks for feeding image data coming from
+;; (current-input-port). user data is used to store the one-byte
+;; read-ahead used for eof predicate (< 0 if unknown).
+(foreign-declare "
+int  chicken_port_read(void*, char*, int);
+void chicken_port_skip(void*, int);
+
+int port_read(void* user, char* data, int size) {
+  int next = *(int*)user;
+  if(next >= 0) {
+    data[0] = next;
+    *((int*)user) = -1; // clear next
+    return 1 + chicken_port_read(user, data + 1, size - 1);
+  } else {
+    return chicken_port_read(user, data, size);
+  }
+}
+
+void port_skip(void* user, int n) {
+  chicken_port_skip(user, n);
+}
+
+int port_eof(void* user) {
+  int next = *(int*)user;
+  if(next >= 0) return 0;
+
+  char buff;
+  int read = chicken_port_read(user, &buff, 1);
+  // 0 bytes read => eof
+  if(read == 0) {
+     *((int*)user) = -1; // clear next
+     return 1;
+  } else {
+     *((int*)user) = buff;
+     return 0;
+  }
+}
+")
 ;; ====================
 
 (define (read-image #!key channels)
@@ -91,11 +125,11 @@
 	 c-pointer (((c-pointer int) x)
 		    ((c-pointer int) y)
 		    ((c-pointer int) channels))
-	 "int _channels;"
+	 "int _channels, last = -1;"
 	 "stbi_io_callbacks io = "
 	 "  {.read = port_read, .skip = port_skip, .eof = port_eof};"
 	 "stbi_uc* ret = stbi_load_from_callbacks"
-	 "  (&io, 0, x, y, &_channels, *channels);"
+	 "  (&io, &last, x, y, &_channels, *channels);"
 	 "if(*channels == 0) *channels = _channels;"
 	 "return(ret);")
 	(location x) (location y) (location channels))
@@ -113,11 +147,11 @@
        int (((c-pointer int) x)
 	    ((c-pointer int) y)
 	    ((c-pointer int) channels))
-       "int _channels;"
+       "int _channels, last = -1;"
        "stbi_io_callbacks io = "
        "  {.read = port_read, .skip = port_skip, .eof = port_eof};"
        "return("
-       " stbi_info_from_callbacks(&io, 0, x, y, channels)"
+       " stbi_info_from_callbacks(&io, &last, x, y, channels)"
        ");")
       (location x) (location y) (location channels))
      'read-image)
