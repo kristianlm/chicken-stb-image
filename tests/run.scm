@@ -2,6 +2,9 @@
  (chicken-5 (import stb-image (chicken blob) srfi-4
 		    (chicken file)
 		    (chicken pathname)
+                    (only (chicken string) conc)
+                    (only (chicken condition) handle-exceptions print-error-message)
+                    (only (chicken port) with-output-to-string with-input-from-string)
 		    test))
  (else (use stb-image test srfi-4 posix)))
 
