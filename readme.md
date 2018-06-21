@@ -38,8 +38,8 @@ pixel color, interleaved as follows:
 3. red, green, blue
 4. red, green, blue, alpha
 
-Note that [stb_image.h]'s `hdr` and `pnm` support only works with
-`load-image`.
+`read-image` may read beyond the image data, so the data in
+`current-input-port` should contain only one image.
 
     [procedure] (read-image-info)
 	[procedure] (load-image-info blob)
