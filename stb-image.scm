@@ -33,7 +33,7 @@
 			"return(ret);")
        blob (u8vector-length blob)
        (location x) (location y) (location channels))
-      'stbi-load-from-memory))
+      'load-image))
    
    (let ((pixels (make-u8vector (* x y channels))))
      (move-memory! ptr pixels (u8vector-length pixels))
@@ -55,7 +55,7 @@
 		       "return(stbi_info_from_memory(buffer, len, x, y, channels));")
       blob (u8vector-length blob)
       (location x) (location y) (location channels))
-     'stbi-info-from-memory)
+     'load-image-info)
    (values x y channels)))
 
 ;; ==================== externals ====================
@@ -157,6 +157,6 @@ int port_eof(void* user) {
        " stbi_info_from_callbacks(&io, &last, x, y, channels)"
        ");")
       (location x) (location y) (location channels))
-     'read-image)
+     'read-image-info)
     (values x y channels)))
 
