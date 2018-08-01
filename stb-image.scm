@@ -99,7 +99,14 @@ int port_read(void* user, char* data, int size) {
 }
 
 void port_skip(void* user, int n) {
-  chicken_port_skip(user, n);
+  int next = *(int*)user;
+  if(next >= 0) {
+    *((int*)user) = -1; // clear next
+    if(n >= 1)
+      chicken_port_skip(user, n - 1);
+  } else {
+    chicken_port_skip(user, n);
+  }
 }
 
 int port_eof(void* user) {
