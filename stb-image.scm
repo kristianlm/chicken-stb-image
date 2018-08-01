@@ -128,42 +128,38 @@ int port_eof(void* user) {
 ;; ====================
 
 (define (read-image #!key channels)
-  (let-location ((x int) (y int) (channels int (or channels 0)))
-    (define ptr
-      (check
-       ((foreign-safe-lambda*
-	 c-pointer (((c-pointer int) x)
-		    ((c-pointer int) y)
-		    ((c-pointer int) channels))
-	 "int _channels, last = -1;"
-	 "stbi_io_callbacks io = "
-	 "  {.read = port_read, .skip = port_skip, .eof = port_eof};"
-	 "stbi_uc* ret = stbi_load_from_callbacks"
-	 "  (&io, &last, x, y, &_channels, *channels);"
-	 "if(*channels == 0) *channels = _channels;"
-	 "return(ret);")
-	(location x) (location y) (location channels))
-       'read-image))
-    (let* ((size (* x y channels))
-	   (pixels (make-u8vector size)))
-      (move-memory! ptr pixels size)
-      (stbi-image-free ptr)
-      (values pixels x y channels))))
+  (apply
+   (lambda (ptr x y channels)
+     (check ptr 'read-image)
+     (let* ((size (* x y channels))
+	    (pixels (make-u8vector size)))
+       (move-memory! ptr pixels size)
+       (stbi-image-free ptr)
+       (values pixels x y channels)))
+   ((foreign-safe-lambda*
+     scheme-object ((int desired_channels))
+     "int x, y, channels, last = -1;\n"
+     "C_word *ptr = C_alloc(C_SIZEOF_LIST(4));\n"
+     "C_word *ptr_p = C_alloc(C_SIZEOF_POINTER);\n"
+     "stbi_io_callbacks io = "
+     "  {.read = port_read, .skip = port_skip, .eof = port_eof};\n"
+     "stbi_uc* pixels = stbi_load_from_callbacks"
+     "  (&io, &last, &x, &y, &channels, desired_channels);\n"
+     "return(C_list(&ptr, 4, C_mpointer_or_false(&ptr_p, pixels), "
+     "  C_fix(x), C_fix(y), C_fix(desired_channels == 0 ? channels : desired_channels)));")
+    (or channels 0))))
 
 (define (read-image-info)
-  (let-location ((x int) (y int) (channels int))
-    (check
-     ((foreign-safe-lambda*
-       int (((c-pointer int) x)
-	    ((c-pointer int) y)
-	    ((c-pointer int) channels))
-       "int _channels, last = -1;"
-       "stbi_io_callbacks io = "
-       "  {.read = port_read, .skip = port_skip, .eof = port_eof};"
-       "return("
-       " stbi_info_from_callbacks(&io, &last, x, y, channels)"
-       ");")
-      (location x) (location y) (location channels))
-     'read-image-info)
-    (values x y channels)))
+  (apply
+   (lambda (ret x y channels)
+     (check ret 'read-image-info)
+     (values x y channels))
+   ((foreign-safe-lambda*
+     scheme-object ()
+     "int x, y, channels, last = -1;"
+     "C_word *ptr = C_alloc(C_SIZEOF_LIST(4));"
+     "stbi_io_callbacks io = "
+     "  {.read = port_read, .skip = port_skip, .eof = port_eof};"
+     "int ret = stbi_info_from_callbacks(&io, &last, &x, &y, &channels);"
+     "return(C_list(&ptr, 4, C_fix(ret), C_fix(x), C_fix(y), C_fix(channels)));"))))
 
