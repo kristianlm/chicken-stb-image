@@ -1,4 +1,8 @@
 (foreign-declare "
+#ifdef __TINYC__
+#define STBI_NO_SIMD
+#endif
+
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_STDIO
 #include \"stb_image.h\"
