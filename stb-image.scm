@@ -3,6 +3,9 @@
 #define STBI_NO_SIMD
 #endif
 
+// keep procedures like stbi_load_from_callbacks to ourselves
+ #define STB_IMAGE_STATIC
+
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_STDIO
 #include \"stb_image.h\"
