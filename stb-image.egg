@@ -5,6 +5,7 @@
  (test-dependencies test)
  (synopsis "read png/jpg/tga/bmp/psd/gif/hdr/pic/pnm images into pixels")
  (components (extension stb-image
+                        (csc-options "-d0" "-O3")
 			(source "stb-image-module5.scm")
                         (source-dependencies "stb-image.scm"
                                              "stb_image.h"))))
