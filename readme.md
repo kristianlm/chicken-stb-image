@@ -70,6 +70,10 @@ For quick testing, you can read PNGs from ImageMagick's `convert`:
 Which reveal the black line along the diagonal and informs that the
 image is 4x4 with 3-channels.
 
+Remerber to open files in `#:binary` mode for things to work on Windows:
+
+     (with-input-from-file "rose.png" read-image-info #:binary)
+
 ## Known limitations
 
 #### backwards seek not implemented
